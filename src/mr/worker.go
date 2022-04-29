@@ -37,17 +37,17 @@ func getJobNum(key string, nReduce int) int {
 // Process a map task, return the newly created file name that
 // holds the intermediate data.
 //
-func processMapTask(mapf func(string, string) []KeyValue, task MapTask, nReduce int) (map[int][]string, bool) {
+func processMapTask(mapf func(string, string) []KeyValue, task MapTask, nReduce int) (map[int]string, bool) {
 	fileName := task.FileName
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatalf("cannot open file: %v in map task", fileName)
-		return map[int][]string{}, false
+		return map[int]string{}, false
 	}
 	content, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Fatalf("problem reading %v", fileName)
-		return map[int][]string{}, false
+		return map[int]string{}, false
 	}
 	file.Close()
 
@@ -63,17 +63,17 @@ func processMapTask(mapf func(string, string) []KeyValue, task MapTask, nReduce 
 		reduceMap[reduceNum] = append(reduceMap[reduceNum], kv)
 	}
 	// Sort all of the reduce buckets before writing to a file
-	onames := make(map[int][]string, nReduce)
+	onames := make(map[int]string, nReduce)
 	for reduceNum, kvs := range reduceMap {
 		sort.Slice(kvs, func(i, j int) bool {
 			return kvs[i].Key < kvs[j].Key
 		})
 		oname := fmt.Sprintf("map_out_%d_%d", task.TaskNum, reduceNum)
-		onames[reduceNum] = append(onames[reduceNum], oname)
+		onames[reduceNum] = oname
 		ofile, err := os.Create(oname)
 		if err != nil {
 			log.Fatalf("problem creating %v", oname)
-			return map[int][]string{}, false
+			return map[int]string{}, false
 		}
 		enc := json.NewEncoder(ofile)
 		enc.Encode(&kvs)
@@ -192,7 +192,7 @@ func pushReduceDone(taskNum int, workerId int) {
 	call("Coordinator.PushReduceDone", &args, &PushReduceDoneReply{})
 }
 
-func pushMapDone(fileName string, outNames map[int][]string, taskNum int, workerId int) {
+func pushMapDone(fileName string, outNames map[int]string, taskNum int, workerId int) {
 	args := PushMapDoneArgs{
 		FileName: fileName,
 		OutNames: outNames,

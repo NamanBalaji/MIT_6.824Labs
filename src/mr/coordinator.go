@@ -254,11 +254,11 @@ func (c *Coordinator) PushMapDone(args *PushMapDoneArgs, reply *PushMapDoneReply
 			c.mapTasks[idx].State = Complete
 			fmt.Printf("Completed processing for file %v\n\n", mt.FileName)
 			// Disseminate the map output files for later processing by the reducer workers
-			for reduceNum, onames := range args.OutNames {
+			for reduceNum, oname := range args.OutNames {
 				task := &c.reduceTasks[reduceNum]
 				task.State = Ready
 				mapfiles := &task.MapFiles
-				*mapfiles = append(*mapfiles, onames...)
+				*mapfiles = append(*mapfiles, oname)
 			}
 		}
 	}

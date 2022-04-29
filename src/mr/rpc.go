@@ -41,7 +41,7 @@ type PushReduceDoneReply struct{}
 type PushMapDoneArgs struct {
 	FileName string
 	// map reduce number -> slice of file names, probably a single one per reduce num though right?
-	OutNames map[int][]string
+	OutNames map[int]string
 	TaskNum  int
 	WorkerId int
 }
