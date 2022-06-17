@@ -3,7 +3,7 @@
 - [x] lab1 mr
 - [o] lab2 raft
     - [x] 2A
-    - [o] 2B
+    - [x] 2B
     - [o] 2C
     - [o] 2D
 - [o] lab3 kvraft
